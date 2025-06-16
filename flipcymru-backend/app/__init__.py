@@ -8,7 +8,7 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'super-secret')  # fallback value
 
     # Initialize CORS and JWT
-    CORS(app, origins=["http://localhost:8000"], supports_credentials=True)
+    CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
     JWTManager(app)  
 
     # Import and register blueprints
