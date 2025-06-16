@@ -1,6 +1,8 @@
 # FlipCymru
 A web application to allow users to learn welsh using flashcards that translate daily use words from english to welsh.
 
+# Shreyas was here
+
 ## Install Flask server dependencies:
 pip install flask flask-cors flask-jwt-extended psycopg2-binary gtts python-dotenv bcrypt
 
