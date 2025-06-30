@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Tailwind CSS directives - essential for Tailwind to work */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
@@ -28,11 +32,6 @@ body {
 /* src/app/globals.css */
 /* These are the global styles for your Next.js application.
    They include Tailwind CSS directives and custom scrollbar styling for a polished look. */
-
-/* Tailwind CSS directives - essential for Tailwind to work */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Custom scrollbar styling for better aesthetics across browsers.
    This targets Webkit-based browsers (Chrome, Safari, Edge). */
