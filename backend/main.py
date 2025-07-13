@@ -167,6 +167,15 @@ class FlashcardCategoryResponse(BaseModel):
 class UpdateFlashcardStatusRequest(BaseModel):
     learnt: bool # The new status (should be true for this API's purpose)
 
+# Pydantic model for UserProfile response
+class UserProfileResponse(BaseModel):
+    uid: str
+    email: str
+    username: str
+    createdAt: Any
+    learningPreferences: Dict[str, Any] # Flexible dict for now
+    stats: Dict[str, Any] # Flexible dict for now
+
 # --- Security Dependency ---
 # This defines an HTTP Bearer scheme for extracting the ID token from the Authorization header.
 oauth2_scheme = HTTPBearer()
@@ -846,6 +855,38 @@ async def update_flashcard_learnt_status(
         print(f"Error updating flashcard {card_id} learnt status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/get-user-profile", response_model=UserProfileResponse) # <--- NEW GET Endpoint
+async def get_user_profile(
+    decoded_token: Dict[str, Any] = Depends(verify_token) # Secure this endpoint
+):
+    """
+    Retrieves the authenticated user's profile data from Firestore.
+    Requires a valid Firebase ID Token in the Authorization: Bearer header.
+    """
+    try:
+        uid = decoded_token["uid"]
+        user_profile_doc_ref = get_user_profile_doc_ref(uid)
+
+        user_profile_doc = user_profile_doc_ref.get()
+
+        if not user_profile_doc.exists:
+            raise HTTPException(status_code=404, detail="User profile not found. Please register or ensure data exists.")
+
+        profile_data = user_profile_doc.to_dict()
+
+        # Convert Firestore Timestamp to ISO string for response
+        if type(profile_data.get("createdAt")).__name__ == 'Timestamp':
+            profile_data["createdAt"] = profile_data["createdAt"].isoformat()
+
+        return UserProfileResponse(**profile_data)
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Error retrieving user profile for {uid}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# --- Health Check Endpoint ---
 @app.get("/")
 async def read_root():
     return {"message": "FlipCymru Backend is running!"}
